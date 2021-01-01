@@ -4,5 +4,10 @@ version = "0.1.0"
 authors = ["toshokan <toshokan@shojigate.net>"]
 edition = "2018"
 
+[features]
+default = []
+parking-lot = ["parking_lot", "indirect-once-derive/parking_lot"]
+
 [dependencies]
 indirect-once-derive = { path = "../indirect-once-derive" }
+parking_lot = { version = "^0", optional = true }

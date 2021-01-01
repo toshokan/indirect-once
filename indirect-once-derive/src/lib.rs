@@ -84,9 +84,15 @@ pub fn indirect(attr: TokenStream, item : TokenStream) -> TokenStream {
     let ptr_sig = build_fn_sig(&info);
     let new_args = info.args.iter().map(|(a, _)| a);
 
+    let import = if cfg!(feature = "parking_lot") {
+	quote!{ use parking_lot::Once; }
+    } else {
+	quote!{ use std::sync::Once; }
+    };
+
     if let Some(resolver) = resolver {
 	item.block = Box::new(syn::parse((quote!{{
-	    use std::sync::Once;
+	    #import
 	    
 	    static mut IMPL: Option<#ptr_sig> = None;
 	    static INIT: Once = Once::new();
