@@ -84,27 +84,28 @@ pub fn indirect(attr: TokenStream, item : TokenStream) -> TokenStream {
     let ptr_sig = build_fn_sig(&info);
     let new_args = info.args.iter().map(|(a, _)| a);
 
-    let import = if cfg!(feature = "parking_lot") {
-	quote!{ use parking_lot::Once; }
-    } else {
-	quote!{ use std::sync::Once; }
-    };
+    use proc_macro_error::OptionExt;
 
-    if let Some(resolver) = resolver {
-	item.block = Box::new(syn::parse((quote!{{
-	    #import
-	    
-	    static mut IMPL: Option<#ptr_sig> = None;
-	    static INIT: Once = Once::new();
+    let resolver = resolver.expect_or_abort("Missing required argument 'resolver'");
 
-	    unsafe {
-		INIT.call_once(|| {
-		    IMPL = Some(#resolver());
-		});
-		(IMPL.unwrap())(#(#new_args),*)
-	    }
-	}}).into()).unwrap());
-    }
+    #[cfg(feature = "parking_lot")]
+    let import = quote!{ use parking_lot::Once; };
+    #[cfg(not(feature = "parking_lot"))]
+    let import = quote!{ use std::sync::Once; };
+
+    item.block = Box::new(syn::parse((quote!{{
+	#import
+	
+	static mut IMPL: Option<#ptr_sig> = None;
+	static INIT: Once = Once::new();
+
+	unsafe {
+	    INIT.call_once(|| {
+		IMPL = Some(#resolver());
+	    });
+	    (IMPL.unwrap())(#(#new_args),*)
+	}
+    }}).into()).unwrap());
 
     use quote::ToTokens;
     item.to_token_stream().into()
