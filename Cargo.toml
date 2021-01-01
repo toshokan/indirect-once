@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+	"indirect-once-derive",
+	"indirect-once"
+]
