@@ -1,3 +1,5 @@
+#![allow(unused_imports)]
+
 #[cfg(feature = "proc-macro")]
 pub use indirect_once_derive::*;
 
