@@ -10,7 +10,7 @@ use parking_lot::Once;
 
 #[macro_export]
 macro_rules! indirect_fn {
-    (resolver = $resolver: ident ; fn $name:ident($($arg: ident : $pty: ty),*) {}) => { indirect_fn!(fn $crate::$name($($arg: $pty),*) -> () {})};
+    (resolver = $resolver: ident ; fn $name:ident($($arg: ident : $pty: ty),*) {}) => { $crate::indirect_fn!(resolver = $resolver; fn $name($($arg: $pty),*) -> () {})};
     (resolver = $resolver: ident ; fn $name:ident($($arg: ident : $pty: ty),*) -> $ret: ty {})=> {
 	fn $name($($arg: $pty),*) -> $ret {
 	    static mut IMPL: Option<&'static fn($($pty),*) -> $ret> = None;
