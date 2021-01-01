@@ -40,4 +40,4 @@ By default, the implementation uses `std::sync::Once`, but the `parking-lot` fea
 In either case, once the resolver has run once, this should be a simple atomic load.
 
 ## License
-`flag-mast` is dual licensed under the MIT license and the Apache 2.0 license. You may choose whichever one you prefer.
+`indirect-once` is dual licensed under the MIT license and the Apache 2.0 license. You may choose whichever one you prefer.
