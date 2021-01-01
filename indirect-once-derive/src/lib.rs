@@ -82,7 +82,7 @@ pub fn indirect(attr: TokenStream, item : TokenStream) -> TokenStream {
 
     let info = collect_fn_info(&item);
     let ptr_sig = build_fn_sig(&info);
-    let new_args: Vec<_> = info.args.iter().map(|(a, _)| a).collect();
+    let new_args = info.args.iter().map(|(a, _)| a);
 
     if let Some(resolver) = resolver {
 	item.block = Box::new(syn::parse((quote!{{
