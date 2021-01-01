@@ -1,4 +1,28 @@
+#[cfg(feature = "proc-macro")]
 pub use indirect_once_derive::*;
+
+#[cfg(not(feature = "parking-lot"))]
+use std::sync::Once;
+#[cfg(feature = "parking-lot")]
+use parking_lot::Once;
+
+#[macro_export]
+macro_rules! indirect_fn {
+    (resolver = $resolver: ident ; fn $name:ident($($arg: ident : $pty: ty),*) {}) => { indirect_fn!(fn $crate::$name($($arg: $pty),*) -> () {})};
+    (resolver = $resolver: ident ; fn $name:ident($($arg: ident : $pty: ty),*) -> $ret: ty {})=> {
+	fn $name($($arg: $pty),*) -> $ret {
+	    static mut IMPL: Option<&'static fn($($pty),*) -> $ret> = None;
+	    static INIT: Once = Once::new();
+
+	    unsafe {
+		INIT.call_once(|| {
+		    IMPL = Some($resolver());
+		});
+		(IMPL.unwrap())($($arg),*)
+	    }
+	}
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -21,6 +45,7 @@ mod tests {
     }
     
     #[test]
+    #[cfg(feature = "proc-macro")]
     fn it_works() {
 	#[indirect(resolver = "foo")]
 	fn hello_world(arg: i32) -> i32 {}
@@ -29,6 +54,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "proc-macro")]
     fn it_works_2() {
 	#[indirect(resolver = "bar")]
 	fn hello_hello(arg: i32) -> i32 {}
@@ -37,6 +63,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "proc-macro")]
     fn multiple_arguments() {
 	fn do_thingy(one: i32, two: i32, really: bool) -> (bool, i32) {
 	    if really {
@@ -54,5 +81,14 @@ mod tests {
 	fn foo(one: i32, two: i32, three: bool) -> (bool, i32) {}
 
 	assert_eq!(foo(1, 2, true), (true, 3))
+    }
+
+    #[test]
+    fn macro_impl() {
+	indirect_fn! {
+	    resolver = foo; fn dog(param: i32) -> i32 {}
+	}
+
+	assert_eq!(dog(41), 42);
     }
 }
