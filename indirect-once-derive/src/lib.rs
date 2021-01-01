@@ -60,7 +60,7 @@ struct FnInfo {
 
 #[proc_macro_attribute]
 #[proc_macro_error]
-pub fn ifunc(attr: TokenStream, item : TokenStream) -> TokenStream {
+pub fn indirect(attr: TokenStream, item : TokenStream) -> TokenStream {
     use syn::{AttributeArgs, NestedMeta, ItemFn};
     use syn::parse_macro_input;
     
