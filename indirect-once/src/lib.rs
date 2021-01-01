@@ -35,4 +35,24 @@ mod tests {
 
 	assert_eq!(hello_hello(10), 9);
     }
+
+    #[test]
+    fn multiple_arguments() {
+	fn do_thingy(one: i32, two: i32, really: bool) -> (bool, i32) {
+	    if really {
+		(really, one + two)
+	    } else {
+		(really, two)
+	    }
+	}
+
+	fn pick() -> &'static fn(i32, i32, bool) -> (bool, i32) {
+	    &(do_thingy as _)
+	}
+
+	#[indirect(resolver = "pick")]
+	fn foo(one: i32, two: i32, three: bool) -> (bool, i32) {}
+
+	assert_eq!(foo(1, 2, true), (true, 3))
+    }
 }
