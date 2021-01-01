@@ -75,7 +75,7 @@ pub fn indirect(attr: TokenStream, item : TokenStream) -> TokenStream {
 		p if p.is_ident("resolver") => {
 		    resolver = Some(get_resolver(m));
 		},
-		_ => abort!(arg, "Unknown argument, expect 'resolver'")
+		_ => abort!(arg, "Unknown argument, expected 'resolver'")
 	    }
 	}
     }
