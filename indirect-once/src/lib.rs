@@ -104,11 +104,24 @@ mod tests {
 	    &(incr as _)
 	}
 
-	#[indirect(resolver = "chooser")]
-	fn foo(val: i32) -> i32 {}
+	#[cfg(feature = "proc-macro")]
+	{
+	    #[indirect(resolver = "chooser")]
+	    fn foo(val: i32) -> i32 {}
+	    assert_eq!(foo(1), 2);
+	    assert_eq!(foo(2), 3);
+	    assert_eq!(A.load(Ordering::SeqCst), 1);
+	}
 
-	assert_eq!(foo(1), 2);
-	assert_eq!(foo(2), 3);
-	assert_eq!(A.load(Ordering::SeqCst), 1)
+	indirect_fn! {
+	    resolver = chooser; fn bar(val: i32) -> i32 {}
+	}
+
+	assert_eq!(bar(1), 2);
+	assert_eq!(bar(2), 3);
+	#[cfg(feature = "proc-macro")]
+	assert_eq!(A.load(Ordering::SeqCst), 2);
+	#[cfg(not(feature = "proc-macro"))]
+	assert_eq!(A.load(Ordering::SeqCst), 1);
     }
 }
