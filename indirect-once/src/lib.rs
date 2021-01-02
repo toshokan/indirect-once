@@ -93,4 +93,22 @@ mod tests {
 
 	assert_eq!(dog(41), 42);
     }
+
+    #[test]
+    fn runs_once() {
+	use std::sync::atomic::{AtomicU32, Ordering};
+	static A: AtomicU32 = AtomicU32::new(0);
+	
+	fn chooser() -> &'static fn(i32) -> i32 {
+	    A.fetch_add(1, Ordering::SeqCst);
+	    &(incr as _)
+	}
+
+	#[indirect(resolver = "chooser")]
+	fn foo(val: i32) -> i32 {}
+
+	assert_eq!(foo(1), 2);
+	assert_eq!(foo(2), 3);
+	assert_eq!(A.load(Ordering::SeqCst), 1)
+    }
 }
