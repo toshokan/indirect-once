@@ -12,7 +12,7 @@ The `indirect-once` crate provides some macros to help with runtime indirection 
 The exposed API aims to be similar in spirit to the `ifunc` API, but with a Rust flavour. 
 
 ### Example
-Two different styles of macro are supposed by `indirect-once`. 
+Two different styles of macro are supported by `indirect-once`. 
 
 #### Procedural Macro
 
