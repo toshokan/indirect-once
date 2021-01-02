@@ -70,7 +70,7 @@ pub indirect_fn! {
 
 ### Behaviour
 
-In either style, the function specified in the `resolver` argument (of the macro or attribute) will be called at most once the first time the newly-declared function is called.
+In either style, the function specified in the `resolver` argument (of the macro or attribute) will be called at most once, the first time the newly-declared function is called.
 
 By default, the implementation uses `std::sync::Once`, but the `parking-lot` feature replaces this with a `parking_lot::Once`-based backend instead.
 In either case, once the resolver has run once, this should be a simple atomic load.
